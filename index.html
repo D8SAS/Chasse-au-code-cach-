@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="fr">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chasse au Code Caché - D8/Matipay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-container {
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .header-logo {
+            max-height: 60px;
+            max-width: 200px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .vending-machine {
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .machine-display {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 15px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .attempts-counter {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .products-window {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border: 5px solid #3498db;
+            margin: 20px;
+            border-radius: 15px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .product-slot {
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border-radius: 10px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .product-slot:hover:not(.clicked) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border-color: #f39c12;
+        }
+
+        .product-slot.winner:hover:not(.clicked) {
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { box-shadow: 0 0 5px #f39c12; }
+            50% { box-shadow: 0 0 15px #f39c12, 0 0 25px #f39c12; }
+            100% { box-shadow: 0 0 5px #f39c12; }
+        }
+
+        .product-icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .product-name {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #2c3e50;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .product-slot.clicked {
+            background: #bdc3c7;
+            transform: scale(0.95);
+            cursor: not-allowed;
+        }
+
+        .product-slot.clicked .product-icon {
+            opacity: 0.5;
+        }
+
+        .machine-bottom {
+            background: linear-gradient(180deg, #34495e 0%, #2c3e50 100%);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .coin-slot {
+            width: 60px;
+            height: 20px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            border: 2px solid #95a5a6;
+        }
+
+        .dispenser {
+            width: calc(100% - 40px);
+            height: 50px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            border: 3px solid #95a5a6;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .dispenser::after {
+            content: "RETRAIT";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #95a5a6;
+            font-size: 0.7rem;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+        }
+
+        .dispenser-door {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #2c3e50, #34495e);
+            border-radius: 7px;
+            transition: transform 0.8s ease;
+            transform-origin: bottom;
+            border: 2px solid #95a5a6;
+        }
+
+        .dispenser.open .dispenser-door {
+            transform: rotateX(-90deg);
+        }
+
+        .dispenser.open::after {
+            opacity: 0;
+        }
+
+        .dispenser-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.5s ease 0.8s;
+        }
+
+        .dispenser.open .dispenser-content {
+            opacity: 1;
+        }
+
+        .code-inside {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border: 2px dashed white;
+            animation: pulse 2s infinite;
+        }
+
+        .product-inside {
+            font-size: 1.2rem;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-3px); }
+        }
+
+        .falling-product {
+            position: fixed;
+            font-size: 3rem;
+            z-index: 999;
+            pointer-events: none;
+            animation: fallAndBounce 2s ease-in-out forwards;
+        }
+
+        @keyframes fallAndBounce {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            70% {
+                transform: translateY(200px) rotate(360deg);
+                opacity: 1;
+            }
+            85% {
+                transform: translateY(185px) rotate(360deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(200px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            z-index: 1001;
+            pointer-events: none;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            animation: confettiFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .confetti-square {
+            border-radius: 0 !important;
+            animation: confettiSquareFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiSquareFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(50vh) rotate(360deg) scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        .dispenser-glow {
+            animation: dispenserGlow 2s ease-in-out;
+        }
+
+        @keyframes dispenserGlow {
+            0%, 100% {
+                box-shadow: none;
+            }
+            50% {
+                box-shadow: 0 0 20px #f39c12, inset 0 0 20px #f39c12;
+                border-color: #f39c12;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            animation: modalPop 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .code-display {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin: 20px 0;
+            border: 3px dashed white;
+        }
+
+        .close-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .close-btn:hover {
+            background: #c0392b;
+        }
+
+        .game-controls {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            margin-top: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .new-game-btn {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .new-game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .game-over {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            border-radius: 10px;
+            margin: 10px 20px;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                max-width: 400px;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            
+            .product-slot {
+                padding: 8px 4px;
+                min-height: 70px;
+            }
+            
+            .product-icon {
+                font-size: 1.5rem;
+            }
+            
+            .product-name {
+                font-size: 0.7rem;
+            }
+
+            .header-logo {
+                max-height: 40px;
+                max-width: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="game-container">
+   <div class="header"><img src="https://i0.wp.com/d8.fr/wp-content/uploads/2021/09/cropped-100fonce-LogoValideD8-ee-clair-1.png?resize=2048%2C1051&amp;ssl=1" alt="D8 Logo" class="header-logo" onerror="this.style.display='none';">
+    <h1>🎯 Chasse au Code Caché</h1>
+    <p>Trouvez le code promotionnel dans le distributeur !</p>
+    <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);">
+     <p style="margin: 0 0 8px 0; font-weight: 600;">📋 Instructions :</p>
+     <p style="margin: 0 0 5px 0; font-size: 0.9rem;">• Vous avez 3 tentatives pour trouver le code</p>
+     <p style="margin: 0; font-size: 0.9rem;">• Cliquez sur un produit pour découvrir s'il cache un code 🎁</p>
+    </div>
+   </div>
+   <div class="vending-machine">
+    <div class="machine-display">
+     === D8 DISTRIBUTEUR AUTOMATIQUE ===<br>
+      SELECTIONNEZ VOTRE PRODUIT
+    </div>
+    <div class="attempts-counter" id="attemptsCounter">
+     Tentatives restantes: 3/3
+    </div>
+    <div class="products-window">
+     <div class="products-grid" id="productsGrid"><!-- Les produits seront générés par JavaScript -->
+     </div>
+    </div>
+    <div class="machine-bottom">
+     <div class="coin-slot"></div>
+     <div class="dispenser" id="dispenser">
+      <div class="dispenser-door"></div>
+      <div class="dispenser-content" id="dispenserContent">
+       <div class="product-inside" id="productInside"></div>
+       <div class="code-inside" id="codeInside"></div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div><!-- Modal pour afficher les résultats -->
+  <div class="modal" id="resultModal">
+   <div class="modal-content">
+    <div id="modalContent"></div><button class="close-btn" onclick="closeModal()">Fermer</button>
+   </div>
+  </div>
+  <script>
+        // Base de codes promotionnels thème café et distributeurs (50+ codes uniques)
+        const promoCodes = [
+            'ESPRESSO24', 'CAPPUCCINO7', 'LATTE2024', 'MACCHIATO9', 'AMERICANO15', 'MOCHA777', 'FRAPPÉ123', 'CORTADO88',
+            'BARISTA99', 'ARABICA456', 'ROBUSTA321', 'CREMA2024', 'GRAINS789', 'TORRÉFIÉ12', 'MOUTURE34', 'FILTRE567',
+            'VENDING24', 'AUTOMAT99', 'MACHINE77', 'DISTRIB123', 'SNACK456', 'BOISSON789', 'PAUSE012', 'BUREAU345',
+            'CAFÉ24H', 'HOTDRINK7', 'STEAM999', 'BREW2024', 'PERCO123', 'DOSETTE88', 'CAPSULE77', 'INSTANT456',
+            'MATIN789', 'RÉVEIL24', 'ENERGY99', 'BOOST777', 'CAFÉINE12', 'ARÔME345', 'SAVEUR678', 'GOÛT901',
+            'NOIR234', 'SUCRÉ567', 'AMER890', 'DOUX123', 'FORT456', 'LÉGER789', 'CORSÉ012', 'VELOUTÉ345',
+            'PAUSE678', 'BREAK901', 'DÉTENTE24', 'RELAX789', 'MOMENT12', 'PLAISIR45', 'CONVIV78', 'PARTAGE90'
+        ];
+
+        // Produits du distributeur avec leurs icônes
+        const products = [
+            { icon: '🥜', name: 'Mix Noix' },
+            { icon: '🧃', name: 'Jus Bio' },
+            { icon: '💧', name: 'Eau' },
+            { icon: '<img src="https://image.emojipng.com/204/7630204.jpg" alt="Coca Cola" style="width: 3rem; height: 3rem;" onerror="this.outerHTML=\'🥤\';">', name: 'Coca Cola' },
+            { icon: '🥪', name: 'Sandwich' },
+            { icon: '🍬', name: 'Bonbons' },
+            { icon: '🥗', name: 'Salade Box' },
+            { icon: '<img src="https://attic.sh/mvlzfzearz1x6zh9mp9yverdj18l" alt="Yaourt" style="width: 2.5rem; height: 2.5rem;" onerror="this.outerHTML=\'🥛\';">', name: 'Yaourt' },
+            { icon: '🍫', name: 'Barre Chocolat' },
+            { icon: '🌰', name: 'Noisettes' },
+            { icon: '☕', name: 'Café' },
+            { icon: '<img src="https://images.emojiterra.com/mozilla/1024px/2615.png" alt="Chocolat Chaud" style="width: 2rem; height: 2rem;" onerror="this.outerHTML=\'☕\';">', name: 'Chocolat Chaud' },
+            { icon: '🍃', name: 'Thé Menthe' },
+            { icon: '<img src="https://attic.sh/6z0pwp4zrjyu616t4b1pfsqvw7ym" alt="Compote" style="width: 2rem; height: 2rem;" onerror="this.outerHTML=\'🍯\';">', name: 'Compote' },
+            { icon: '<img src="https://attic.sh/pk0bi1vx9taj2u3jxjq4de3rkq2y" alt="Cappuccino Noisette" style="width: 2rem; height: 2rem;" onerror="this.outerHTML=\'☕\';">', name: 'Cappuccino Noisette' },
+            { icon: '<img src="https://attic.sh/tol6sr0176atc0pjre88kg397idh" alt="Redbull" style="width: 3rem; height: 3rem;" onerror="this.outerHTML=\'🔋\';">', name: 'Redbull' }
+        ];
+
+        let gameState = {
+            winnerIndex: -1,
+            winnerCode: '',
+            gameEnded: false,
+            clickedProducts: new Set(),
+            attemptsLeft: 3,
+            maxAttempts: 3
+        };
+
+        // Funzioni per gestire il limite giornaliero
+        function getTodayKey() {
+            const today = new Date();
+            return `game_played_${today.getFullYear()}_${today.getMonth()}_${today.getDate()}`;
+        }
+
+        function hasPlayedToday() {
+            const todayKey = getTodayKey();
+            return localStorage.getItem(todayKey) === 'true';
+        }
+
+        function markAsPlayedToday() {
+            const todayKey = getTodayKey();
+            localStorage.setItem(todayKey, 'true');
+        }
+
+        function getTimeUntilMidnight() {
+            const now = new Date();
+            const midnight = new Date();
+            midnight.setHours(24, 0, 0, 0);
+            const diff = midnight - now;
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            return { hours, minutes };
+        }
+
+        function initGame() {
+            // Vérifier si l'utilisateur a déjà joué aujourd'hui
+            if (hasPlayedToday()) {
+                showAlreadyPlayedMessage();
+                return;
+            }
+
+            // Réinitialiser l'état du jeu
+            gameState.winnerIndex = Math.floor(Math.random() * products.length);
+            gameState.winnerCode = promoCodes[Math.floor(Math.random() * promoCodes.length)];
+            gameState.gameEnded = false;
+            gameState.clickedProducts.clear();
+            gameState.attemptsLeft = gameState.maxAttempts;
+
+            // Réinitialiser la tasca
+            const dispenser = document.querySelector('.dispenser');
+            const codeInside = document.getElementById('codeInside');
+            const productInside = document.getElementById('productInside');
+            dispenser.classList.remove('open');
+            codeInside.textContent = '';
+            productInside.textContent = '';
+
+            // Mettre à jour le compteur de tentatives
+            updateAttemptsCounter();
+
+            // Générer la grille de produits
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            products.forEach((product, index) => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product-slot';
+                if (index === gameState.winnerIndex) {
+                    productDiv.classList.add('winner');
+                }
+                
+                productDiv.innerHTML = `
+                    <div class="product-icon">${product.icon}</div>
+                    <p class="product-name">${product.name}</p>
+                `;
+                
+                productDiv.addEventListener('click', () => clickProduct(index, productDiv));
+                grid.appendChild(productDiv);
+            });
+
+            // Supprimer le message de fin de jeu s'il existe
+            const gameOverMsg = document.querySelector('.game-over');
+            if (gameOverMsg) {
+                gameOverMsg.remove();
+            }
+        }
+
+        function showAlreadyPlayedMessage() {
+            const { hours, minutes } = getTimeUntilMidnight();
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: linear-gradient(145deg, #fff3cd, #ffeaa7); border-radius: 15px; border: 3px solid #f39c12;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">⏰</div>
+                    <h3 style="color: #e67e22; margin: 0 0 15px 0; font-weight: 700;">Vous avez déjà joué aujourd'hui !</h3>
+                    <p style="color: #d35400; margin: 0 0 10px 0; font-weight: 500;">Revenez demain pour une nouvelle chance de gagner !</p>
+                    <p style="color: #e67e22; font-weight: 600; font-size: 1.1rem;">⏳ Prochaine partie dans : ${hours}h ${minutes}min</p>
+                </div>
+            `;
+
+            // Désactiver le compteur de tentatives
+            const counter = document.getElementById('attemptsCounter');
+            counter.textContent = 'Limite journalière atteinte';
+            counter.style.background = 'linear-gradient(45deg, #95a5a6, #7f8c8d)';
+        }
+
+        function updateAttemptsCounter() {
+            const counter = document.getElementById('attemptsCounter');
+            counter.textContent = `Tentatives restantes: ${gameState.attemptsLeft}/${gameState.maxAttempts}`;
+            
+            if (gameState.attemptsLeft <= 1) {
+                counter.style.background = 'linear-gradient(45deg, #e74c3c, #c0392b)';
+            } else if (gameState.attemptsLeft <= 2) {
+                counter.style.background = 'linear-gradient(45deg, #f39c12, #e67e22)';
+            } else {
+                counter.style.background = 'linear-gradient(45deg, #27ae60, #2ecc71)';
+            }
+        }
+
+        function clickProduct(index, element) {
+            if (gameState.gameEnded || gameState.clickedProducts.has(index) || gameState.attemptsLeft <= 0) {
+                return;
+            }
+
+            gameState.clickedProducts.add(index);
+            gameState.attemptsLeft--;
+            element.classList.add('clicked');
+
+            updateAttemptsCounter();
+
+            setTimeout(() => {
+                if (index === gameState.winnerIndex) {
+                    showWinModal();
+                } else {
+                    if (gameState.attemptsLeft > 0) {
+                        showTryAgainModal();
+                    } else {
+                        showGameOverModal();
+                    }
+                }
+            }, 300);
+        }
+
+        function createConfetti() {
+            const colors = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#f1c40f', '#e67e22', '#1abc9c'];
+            const confettiCount = 50;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                const piece = document.createElement('div');
+                piece.className = Math.random() > 0.5 ? 'confetti-piece' : 'confetti-piece confetti-square';
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                confetti.appendChild(piece);
+                
+                // Position aléatoire sur la largeur de l'écran
+                confetti.style.left = Math.random() * 100 + 'vw';
+                
+                // Délai aléatoire pour un effet plus naturel
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                
+                // Durée d'animation légèrement variable
+                piece.style.animationDuration = (2.5 + Math.random() * 1) + 's';
+                
+                document.body.appendChild(confetti);
+                
+                // Nettoyer après l'animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 4000);
+            }
+        }
+
+        function animateProductFall(productIcon) {
+            // Lancer les coriandoli immédiatement
+            createConfetti();
+            
+            // Créer l'élément qui va tomber
+            const fallingProduct = document.createElement('div');
+            fallingProduct.className = 'falling-product';
+            fallingProduct.textContent = productIcon;
+            
+            // Positionner au niveau du produit cliqué
+            const winnerElement = document.querySelectorAll('.product-slot')[gameState.winnerIndex];
+            const rect = winnerElement.getBoundingClientRect();
+            fallingProduct.style.left = rect.left + rect.width/2 - 25 + 'px';
+            fallingProduct.style.top = rect.top + 'px';
+            
+            document.body.appendChild(fallingProduct);
+            
+            // Faire briller la zone de retrait
+            const dispenser = document.querySelector('.dispenser');
+            dispenser.classList.add('dispenser-glow');
+            
+            // Afficher le code et le produit dans la tasca
+            const codeInside = document.getElementById('codeInside');
+            const productInside = document.getElementById('productInside');
+            codeInside.textContent = gameState.winnerCode;
+            productInside.textContent = productIcon;
+            
+            // Ouvrir la tasca après que le produit soit tombé
+            setTimeout(() => {
+                dispenser.classList.add('open');
+            }, 1800);
+            
+            // Nettoyer après l'animation
+            setTimeout(() => {
+                fallingProduct.remove();
+                dispenser.classList.remove('dispenser-glow');
+            }, 2000);
+        }
+
+        function showWinModal() {
+            gameState.gameEnded = true;
+            
+            // Marquer comme joué aujourd'hui
+            markAsPlayedToday();
+            
+            // Lancer l'animation de chute du produit
+            const winnerProduct = products[gameState.winnerIndex];
+            animateProductFall(winnerProduct.icon);
+            
+            // Attendre que l'animation soit complète avant d'afficher la modal
+            setTimeout(() => {
+                const modal = document.getElementById('resultModal');
+                const content = document.getElementById('modalContent');
+                
+                content.innerHTML = `
+                    <h2 style="color: #27ae60; margin-top: 0; font-weight: 700;">🎉 Félicitations !</h2>
+                    <p style="font-weight: 500;">Vous avez trouvé un code promotionnel !</p>
+                    <p style="font-weight: 600; color: #f39c12;">Le ${winnerProduct.name} est tombé dans le bac de retrait !</p>
+                    <div class="code-display">${gameState.winnerCode}</div>
+                    <p style="color: #e74c3c; font-weight: 600;">
+                        Saisissez ce code dans l'application Matipay pour savoir si vous faites partie des 15 gagnants !
+                    </p>
+                    <p style="color: #95a5a6; font-weight: 500; margin-top: 15px;">
+                        🕐 Revenez demain pour une nouvelle chance !
+                    </p>
+                `;
+                
+                modal.style.display = 'flex';
+            }, 4000);
+        }
+
+        function showTryAgainModal() {
+            const modal = document.getElementById('resultModal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <h2 style="color: #f39c12; margin-top: 0; font-weight: 700;">😅 Réessayez !</h2>
+                <p style="font-weight: 500;">Ce produit ne contient pas de code promotionnel.</p>
+                <p style="font-weight: 600; color: #e74c3c;">Il vous reste ${gameState.attemptsLeft} tentative${gameState.attemptsLeft > 1 ? 's' : ''} !</p>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+
+        function showGameOverModal() {
+            gameState.gameEnded = true;
+            
+            // Marquer comme joué aujourd'hui
+            markAsPlayedToday();
+            
+            const modal = document.getElementById('resultModal');
+            const content = document.getElementById('modalContent');
+            
+            // Révéler le produit gagnant
+            const winnerProduct = document.querySelectorAll('.product-slot')[gameState.winnerIndex];
+            winnerProduct.style.border = '3px solid #f39c12';
+            winnerProduct.style.background = 'linear-gradient(145deg, #fff3cd, #ffeaa7)';
+            
+            content.innerHTML = `
+                <h2 style="color: #e74c3c; margin-top: 0; font-weight: 700;">😔 Partie terminée !</h2>
+                <p style="font-weight: 500;">Vous avez épuisé vos 3 tentatives.</p>
+                <p style="font-weight: 600;">Le code était caché dans : <strong>${products[gameState.winnerIndex].name}</strong></p>
+                <div style="background: linear-gradient(45deg, #95a5a6, #7f8c8d); color: white; padding: 20px; border-radius: 15px; font-size: 1.8rem; font-weight: 700; letter-spacing: 3px; margin: 20px 0; border: 3px dashed white;">
+                    ❓❓❓❓❓❓
+                </div>
+                <p style="color: #7f8c8d; font-weight: 500;">Le code reste secret !</p>
+                <p style="color: #95a5a6; font-weight: 500; margin-top: 15px;">
+                    🕐 Revenez demain pour une nouvelle chance !
+                </p>
+            `;
+            
+            modal.style.display = 'flex';
+
+            // Ajouter un message dans le jeu
+            const gameOverDiv = document.createElement('div');
+            gameOverDiv.className = 'game-over';
+            gameOverDiv.innerHTML = '🎮 Partie terminée - Revenez demain !';
+            document.querySelector('.vending-machine').appendChild(gameOverDiv);
+        }
+
+        function closeModal() {
+            document.getElementById('resultModal').style.display = 'none';
+        }
+
+        function startNewGame() {
+            // Vérifier si l'utilisateur peut jouer aujourd'hui
+            if (hasPlayedToday()) {
+                const { hours, minutes } = getTimeUntilMidnight();
+                const modal = document.getElementById('resultModal');
+                const content = document.getElementById('modalContent');
+                
+                content.innerHTML = `
+                    <h2 style="color: #f39c12; margin-top: 0; font-weight: 700;">⏰ Limite journalière atteinte</h2>
+                    <p style="font-weight: 500;">Vous avez déjà joué aujourd'hui !</p>
+                    <p style="color: #e67e22; font-weight: 600; font-size: 1.1rem;">⏳ Prochaine partie dans : ${hours}h ${minutes}min</p>
+                    <p style="color: #95a5a6; font-weight: 500; margin-top: 15px;">
+                        Revenez demain pour une nouvelle chance de gagner !
+                    </p>
+                `;
+                
+                modal.style.display = 'flex';
+                return;
+            }
+            
+            initGame();
+        }
+
+        // Fermer la modal en cliquant à l'extérieur
+        document.getElementById('resultModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Initialiser le jeu au chargement
+        initGame();
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'998c1a7070db2a12',t:'MTc2MjE3NTMzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
