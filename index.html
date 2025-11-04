@@ -18,6 +18,154 @@
             align-items: center;
         }
 
+        .rules-screen {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255,255,255,0.98);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .rules-container {
+            padding: 0;
+        }
+
+        .rules-header {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .rules-header .header-logo {
+            max-height: 60px;
+            max-width: 200px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .rules-header h1 {
+            margin: 15px 0 5px 0;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .rules-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .rules-content {
+            padding: 30px;
+            color: #2c3e50;
+        }
+
+        .rules-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            border-left: 5px solid #3498db;
+        }
+
+        .rules-section h3 {
+            margin: 0 0 12px 0;
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .rules-section p {
+            margin: 6px 0;
+            line-height: 1.5;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .rules-section ol, .rules-section ul {
+            margin: 8px 0;
+            padding-left: 18px;
+        }
+
+        .rules-section li {
+            margin: 6px 0;
+            line-height: 1.4;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .prizes {
+            border-left-color: #f39c12 !important;
+            background: linear-gradient(145deg, #fff8e1, #ffecb3);
+        }
+
+        .prizes h3 {
+            color: #e67e22;
+        }
+
+        .exclusions {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .legal-notice {
+            background: linear-gradient(145deg, #fdf2e9, #fdebd0);
+            border: 2px solid #f39c12;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .legal-notice p {
+            margin: 0;
+            color: #d35400;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .accept-rules-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+        }
+
+        .accept-rules-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(39, 174, 96, 0.4);
+            background: linear-gradient(45deg, #229954, #27ae60);
+        }
+
+        .accept-rules-btn:active {
+            transform: translateY(-1px);
+        }
+
         .game-container {
             max-width: 500px;
             width: 100%;
@@ -441,6 +589,33 @@
         }
 
         @media (max-width: 768px) {
+            .rules-screen {
+                max-width: 450px;
+                margin: 10px;
+            }
+
+            .rules-content {
+                padding: 20px;
+            }
+
+            .rules-section {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+
+            .rules-header {
+                padding: 20px;
+            }
+
+            .rules-header h1 {
+                font-size: 1.6rem;
+            }
+
+            .rules-header .header-logo {
+                max-height: 40px;
+                max-width: 150px;
+            }
+
             .game-container {
                 max-width: 400px;
             }
@@ -477,6 +652,10 @@
             .header h1 {
                 font-size: 1.5rem;
             }
+
+            .rules-header h1 {
+                font-size: 1.4rem;
+            }
         }
     </style>
   <style>@view-transition { navigation: auto; }</style>
@@ -484,8 +663,48 @@
   <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
   <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
  </head>
- <body>
-  <div class="game-container">
+ <body><!-- Écran de règlement -->
+  <div class="rules-screen" id="rulesScreen">
+   <div class="rules-container">
+    <div class="rules-header"><img src="https://i0.wp.com/d8.fr/wp-content/uploads/2021/09/cropped-100fonce-LogoValideD8-ee-clair-1.png?resize=2048%2C1051&amp;ssl=1" alt="D8 Logo" class="header-logo" onerror="this.style.display='none';">
+     <h1>🎯 Chasse au Code Caché</h1>
+     <p>Règlement du jeu</p>
+    </div>
+    <div class="rules-content">
+     <div class="rules-section">
+      <h3>🎮 Comment jouer ?</h3>
+      <p>Cliquez sur les produits du distributeur pour trouver le code caché.</p>
+      <p><strong>Vous avez 3 tentatives par jour !</strong></p>
+     </div>
+     <div class="rules-section">
+      <h3>📱 Si vous trouvez un code :</h3>
+      <ol>
+       <li>Ouvrez votre application <strong>Matipay</strong></li>
+       <li>Allez dans <strong>Services → Services supplémentaires → Nouveau code</strong></li>
+       <li>Saisissez votre code découvert</li>
+       <li>Découvrez si vous avez gagné !</li>
+      </ol>
+     </div>
+     <div class="rules-section prizes">
+      <h3>🏆 À gagner :</h3>
+      <p><strong>Snacks, boissons fraîches ou boissons chaudes</strong></p>
+      <p class="exclusions">(hors produits frais : sandwichs, Pasta box, salades, viennoiseries...)</p>
+     </div>
+     <div class="rules-section">
+      <h3>⏰ Règles importantes :</h3>
+      <ul>
+       <li>Si vous ne trouvez pas le code, vous pourrez rejouer le lendemain</li>
+       <li>Tous les codes ne sont pas forcément gagnants</li>
+       <li>Une seule participation par jour et par utilisateur</li>
+      </ul>
+     </div>
+     <div class="legal-notice">
+      <p><em>*La participation au jeu implique l'acceptation totale et inconditionnelle du présent règlement.</em></p>
+     </div><button class="accept-rules-btn" onclick="acceptRules()"> ✅ J'accepte le règlement et je commence à jouer </button>
+    </div>
+   </div>
+  </div>
+  <div class="game-container" id="gameContainer" style="display: none;">
    <div class="header"><img src="https://i0.wp.com/d8.fr/wp-content/uploads/2021/09/cropped-100fonce-LogoValideD8-ee-clair-1.png?resize=2048%2C1051&amp;ssl=1" alt="D8 Logo" class="header-logo" onerror="this.style.display='none';">
     <h1>🎯 Chasse au Code Caché</h1>
     <p>Trouvez le code promotionnel dans le distributeur !</p>
@@ -564,6 +783,13 @@
             attemptsLeft: 3,
             maxAttempts: 3
         };
+
+        // Fonction pour accepter les règles et commencer le jeu
+        function acceptRules() {
+            document.getElementById('rulesScreen').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'block';
+            initGame();
+        }
 
         // Funzioni per gestire il limite giornaliero
         function getTodayKey() {
@@ -886,8 +1112,7 @@
             }
         });
 
-        // Initialiser le jeu au chargement
-        initGame();
+        // Le jeu ne s'initialise plus automatiquement - il faut accepter les règles d'abord
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'998c1a7070db2a12',t:'MTc2MjE3NTMzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99952aa760fd22ab',t:'MTc2MjI3MDM3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
