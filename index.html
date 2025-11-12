@@ -208,34 +208,74 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             position: relative;
             overflow: hidden;
+            border: 8px solid #1a252f;
+            border-top: none;
+        }
+
+        .machine-top-panel {
+            background: linear-gradient(45deg, #34495e, #2c3e50);
+            padding: 15px;
+            border-bottom: 4px solid #1a252f;
+            position: relative;
+        }
+
+        .machine-top-panel::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 20px;
+            right: 20px;
+            height: 3px;
+            background: linear-gradient(90deg, #e74c3c, #f39c12, #27ae60);
+            border-radius: 2px;
         }
 
         .machine-display {
-            background: #1a1a1a;
-            color: #00ff00;
-            padding: 15px;
+            background: #000;
+            color: #00ff41;
+            padding: 12px;
             text-align: center;
             font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            border-bottom: 3px solid #3498db;
+            font-size: 0.85rem;
+            border: 3px inset #333;
+            margin: 10px 20px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,255,65,0.3);
+            text-shadow: 0 0 5px #00ff41;
         }
 
         .attempts-counter {
             background: linear-gradient(45deg, #e74c3c, #c0392b);
             color: white;
-            padding: 10px 20px;
+            padding: 8px 20px;
             text-align: center;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.9rem;
+            border: 2px inset #c0392b;
+            margin: 0 20px 15px 20px;
+            border-radius: 5px;
         }
 
         .products-window {
-            background: rgba(255,255,255,0.1);
-            padding: 25px;
-            border: 5px solid #3498db;
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            border: 6px inset #555;
             margin: 20px;
-            border-radius: 15px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+            border-radius: 10px;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .products-window::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #666, #999, #666);
+            border-radius: 10px;
+            z-index: -1;
         }
 
         .products-grid {
@@ -246,12 +286,12 @@
 
         .product-slot {
             background: linear-gradient(145deg, #ffffff, #f0f0f0);
-            border-radius: 10px;
-            padding: 12px 8px;
+            border-radius: 8px;
+            padding: 10px 6px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 2px solid transparent;
+            border: 3px outset #ddd;
             position: relative;
             overflow: hidden;
             min-height: 80px;
@@ -259,6 +299,18 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .product-slot::before {
+            content: attr(data-code);
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: #666;
+            font-family: 'Courier New', monospace;
         }
 
         .product-slot:hover:not(.clicked) {
@@ -308,15 +360,52 @@
             flex-direction: column;
             align-items: center;
             gap: 15px;
+            border-top: 4px solid #1a252f;
+        }
+
+        .payment-panel {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-bottom: 10px;
         }
 
         .coin-slot {
-            width: 60px;
-            height: 20px;
+            width: 80px;
+            height: 25px;
             background: #1a1a1a;
-            border-radius: 10px;
-            border: 2px solid #95a5a6;
+            border-radius: 15px;
+            border: 3px inset #95a5a6;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
         }
+
+        .coin-slot::after {
+            content: '💰';
+            position: absolute;
+            top: -8px;
+            left: -10px;
+            font-size: 0.8rem;
+        }
+
+        .card-reader {
+            width: 100px;
+            height: 25px;
+            background: #2c3e50;
+            border: 3px inset #34495e;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .card-reader::after {
+            content: '💳';
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            font-size: 0.8rem;
+        }
+
+
 
         .dispenser {
             width: calc(100% - 40px);
@@ -591,9 +680,129 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
             .rules-screen {
-                max-width: 450px;
-                margin: 10px;
+                max-width: 500px;
+                margin: 0;
+            }
+
+            .rules-content {
+                padding: 25px;
+            }
+
+            .rules-section {
+                padding: 18px;
+                margin-bottom: 20px;
+            }
+
+            .rules-header {
+                padding: 25px;
+            }
+
+            .rules-header h1 {
+                font-size: 1.6rem;
+            }
+
+            .rules-header .header-logo {
+                max-height: 50px;
+                max-width: 180px;
+            }
+
+            .game-container {
+                max-width: 500px;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+            }
+            
+            .product-slot {
+                padding: 10px 6px;
+                min-height: 80px;
+            }
+            
+            .product-icon {
+                font-size: 2rem;
+            }
+            
+            .product-name {
+                font-size: 0.75rem;
+            }
+
+            .header-logo {
+                max-height: 50px;
+                max-width: 180px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .machine-display {
+                font-size: 0.85rem;
+                padding: 12px;
+            }
+
+            .attempts-counter {
+                font-size: 0.9rem;
+                padding: 8px 20px;
+            }
+
+            .products-window {
+                padding: 20px;
+                margin: 20px;
+            }
+
+            .machine-bottom {
+                padding: 20px;
+            }
+
+            .payment-panel {
+                margin-bottom: 10px;
+            }
+
+            .dispenser {
+                height: 50px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                max-width: 500px;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            }
+            
+            .product-slot {
+                padding: 8px 4px;
+                min-height: 75px;
+            }
+            
+            .product-icon {
+                font-size: 1.8rem;
+            }
+            
+            .product-name {
+                font-size: 0.7rem;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .rules-header h1 {
+                font-size: 1.5rem;
             }
 
             .rules-content {
@@ -602,61 +811,6 @@
 
             .rules-section {
                 padding: 15px;
-                margin-bottom: 20px;
-            }
-
-            .rules-header {
-                padding: 20px;
-            }
-
-            .rules-header h1 {
-                font-size: 1.6rem;
-            }
-
-            .rules-header .header-logo {
-                max-height: 40px;
-                max-width: 150px;
-            }
-
-            .game-container {
-                max-width: 400px;
-            }
-            
-            .products-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
-            }
-            
-            .product-slot {
-                padding: 8px 4px;
-                min-height: 70px;
-            }
-            
-            .product-icon {
-                font-size: 1.5rem;
-            }
-            
-            .product-name {
-                font-size: 0.7rem;
-            }
-
-            .header-logo {
-                max-height: 40px;
-                max-width: 150px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .products-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .rules-header h1 {
-                font-size: 1.4rem;
             }
         }
     </style>
@@ -716,19 +870,24 @@
     </div>
    </div>
    <div class="vending-machine">
-    <div class="machine-display">
-     === D8 DISTRIBUTEUR AUTOMATIQUE ===<br>
-      SELECTIONNEZ VOTRE PRODUIT
-    </div>
-    <div class="attempts-counter" id="attemptsCounter">
-     Tentatives restantes: 3/3
+    <div class="machine-top-panel">
+     <div class="machine-display">
+      === D8 DISTRIBUTEUR AUTOMATIQUE ===<br>
+       SELECTIONNEZ VOTRE PRODUIT
+     </div>
+     <div class="attempts-counter" id="attemptsCounter">
+      Tentatives restantes: 3/3
+     </div>
     </div>
     <div class="products-window">
      <div class="products-grid" id="productsGrid"><!-- Les produits seront générés par JavaScript -->
      </div>
     </div>
     <div class="machine-bottom">
-     <div class="coin-slot"></div>
+     <div class="payment-panel">
+      <div class="coin-slot"></div>
+      <div class="card-reader"></div>
+     </div>
      <div class="dispenser" id="dispenser">
       <div class="dispenser-door"></div>
       <div class="dispenser-content" id="dispenserContent">
@@ -852,6 +1011,7 @@
             products.forEach((product, index) => {
                 const productDiv = document.createElement('div');
                 productDiv.className = 'product-slot';
+                productDiv.setAttribute('data-code', String.fromCharCode(65 + Math.floor(index / 4)) + (index % 4 + 1));
                 if (index === gameState.winnerIndex) {
                     productDiv.classList.add('winner');
                 }
@@ -966,7 +1126,7 @@
             // Créer l'élément qui va tomber
             const fallingProduct = document.createElement('div');
             fallingProduct.className = 'falling-product';
-            fallingProduct.textContent = productIcon;
+            fallingProduct.innerHTML = productIcon; // Usa innerHTML invece di textContent per preservare le immagini
             
             // Positionner au niveau du produit cliqué
             const winnerElement = document.querySelectorAll('.product-slot')[gameState.winnerIndex];
@@ -984,7 +1144,7 @@
             const codeInside = document.getElementById('codeInside');
             const productInside = document.getElementById('productInside');
             codeInside.textContent = gameState.winnerCode;
-            productInside.textContent = productIcon;
+            productInside.innerHTML = productIcon; // Usa innerHTML anche qui
             
             // Ouvrir la tasca après que le produit soit tombé
             setTimeout(() => {
@@ -1115,5 +1275,5 @@
 
         // Le jeu ne s'initialise plus automatiquement - il faut accepter les règles d'abord
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'999b2e4080ced6fe',t:'MTc2MjMzMzQzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99d43d2094d0d50e',t:'MTc2MjkzMTczMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
